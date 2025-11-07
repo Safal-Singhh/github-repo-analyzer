@@ -1,0 +1,241 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    font-family: "Inter";
+  }
+}
+
+@layer components {
+  /* Custom gradient classes for repeating patterns */
+  .bg-main-gradient {
+    @apply bg-gradient-to-br from-cyan-950 via-slate-950 to-sky-950;
+  }
+
+  /* Card background gradients */
+  .bg-card-gradient {
+    @apply bg-gradient-to-br from-slate-800/60 to-slate-700/40;
+  }
+
+  .bg-card-gradient-hover {
+    @apply hover:border-slate-500/70 hover:shadow-lg hover:shadow-slate-500/10;
+  }
+
+  /* Section card with full styling */
+  .section-card {
+    @apply bg-gradient-to-br from-slate-800/60 to-slate-700/40 rounded-2xl p-6 border border-slate-600/50 transition-all duration-300;
+  }
+
+  .section-card:hover {
+    @apply border-slate-500/70 shadow-lg shadow-slate-500/10;
+  }
+
+  /* Upload area styling */
+  .upload-area {
+    @apply bg-slate-800/50 rounded-xl p-4 sm:p-6 lg:p-8 max-w-xl mx-auto backdrop-blur border border-teal-700 shadow-md shadow-sky-700 hover:shadow-sky-400 hover:shadow-2xl transition duration-500;
+  }
+
+  .upload-zone {
+    @apply text-center p-4 sm:p-6 lg:p-8 border-2 border-dashed border-blue-400/30 rounded-lg;
+  }
+
+  /* Button gradients */
+  .btn-primary {
+    @apply px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-teal-500 to-sky-500 text-white font-semibold rounded-lg cursor-pointer hover:opacity-80 transition text-base sm:text-lg;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 bg-red-500/20 text-red-300 rounded-xl border border-red-500/30 hover:bg-red-500/30 transition text-lg cursor-pointer;
+  }
+
+  /* Score card styling */
+  .score-card {
+    @apply bg-gradient-to-br from-cyan-500/30 via-blue-600/20 to-sky-900/40 rounded-2xl p-6 sm:p-8 border border-sky-500/20 shadow-lg hover:shadow-xl transition-all duration-300;
+  }
+
+  /* Glassy navbar container (logged-in) */
+  .glass-nav {
+    @apply backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl px-4 py-2 shadow-lg shadow-slate-900/30;
+  }
+
+  /* Link pill styling */
+  .link-pill {
+    @apply inline-flex items-center px-4 py-2 rounded-xl text-white/90 bg-gradient-to-r from-sky-600/60 to-teal-600/60 hover:from-sky-500/70 hover:to-teal-500/70 transition-colors border border-white/10;
+  }
+
+  /* Logged-out hero styles */
+  .hero-card {
+    @apply relative overflow-hidden max-w-3xl mx-auto text-center p-8 rounded-2xl border border-slate-600/40 bg-gradient-to-br from-slate-800/60 via-slate-900/60 to-slate-800/60 shadow-xl;
+  }
+
+  .glow-text {
+    @apply text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-cyan-300 to-teal-300;
+  }
+}
+
+/* Button gradients */
+.btn-primary {
+  @apply px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-teal-500 to-sky-500 text-white font-semibold rounded-lg cursor-pointer hover:opacity-80 transition text-base sm:text-lg;
+}
+
+.btn-secondary {
+  @apply px-4 py-2 bg-red-500/20 text-red-300 rounded-xl border border-red-500/30 hover:bg-red-500/30 transition text-lg cursor-pointer;
+}
+
+/* Score card styling */
+.score-card {
+  @apply bg-gradient-to-br from-cyan-500/30 via-blue-600/20 to-sky-900/40 rounded-2xl p-6 sm:p-8 border border-sky-500/20 shadow-lg hover:shadow-xl transition-all duration-300;
+}
+
+/* Progress bar base */
+.progress-bar {
+  @apply w-full h-5 bg-slate-700/50 rounded-full overflow-hidden border border-slate-600/30;
+}
+
+.progress-bar-small {
+  @apply w-full h-4 bg-slate-700/50 rounded-full overflow-hidden border border-slate-600/30;
+}
+
+/* Icon container */
+.icon-container {
+  @apply w-10 h-10 rounded-full flex items-center justify-center;
+}
+
+.icon-container-lg {
+  @apply w-12 h-12 rounded-full flex items-center justify-center;
+}
+
+.icon-container-xl {
+  @apply w-16 h-16 rounded-2xl flex items-center justify-center border;
+}
+
+/* Feature card gradients */
+.feature-card-green {
+  @apply relative bg-gradient-to-br from-green-500/10 to-green-600/5 border border-green-500/30 p-6 rounded-2xl text-center transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-500/20 hover:border-green-400/50;
+}
+
+.feature-card-orange {
+  @apply relative bg-gradient-to-br from-orange-500/10 to-orange-600/5 border border-orange-500/30 p-6 rounded-2xl text-center transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-orange-500/20 hover:border-orange-400/50;
+}
+
+/* Info box gradients */
+.info-box-cyan {
+  @apply bg-gradient-to-r from-cyan-500/10 to-cyan-600/5 rounded-xl border border-cyan-500/20 p-4;
+}
+
+.info-box-emerald {
+  @apply bg-gradient-to-r from-emerald-500/10 to-emerald-600/5 rounded-xl border border-emerald-500/20 p-4;
+}
+
+.info-box-violet {
+  @apply bg-gradient-to-r from-violet-500/10 to-violet-600/5 rounded-xl border border-violet-500/20 p-4;
+}
+
+.info-box-blue {
+  @apply bg-blue-500/10 rounded-xl p-4 border border-blue-500/20;
+}
+
+/* Keyword tag styling */
+.keyword-tag {
+  @apply px-4 py-2 bg-gradient-to-r from-blue-500/20 to-blue-600/10 text-blue-300 rounded-xl border border-blue-500/30 font-medium transition-all duration-300 hover:scale-110 hover:bg-blue-500/30 hover:border-blue-400/50 hover:shadow-lg hover:shadow-blue-500/20 hover:text-blue-200;
+}
+
+/* Progress bar colors */
+.progress-excellent {
+  @apply bg-gradient-to-r from-green-400 to-emerald-400;
+}
+
+.progress-good {
+  @apply bg-gradient-to-r from-yellow-400 to-orange-400;
+}
+
+.progress-improvement {
+  @apply bg-gradient-to-r from-red-400 to-pink-400;
+}
+
+/* Motion keyframes */
+@keyframes floatY {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes pulseGlow {
+  0%,100% { opacity: 0.35; }
+  50% { opacity: 0.65; }
+}
+
+/* Motion helpers */
+.animate-float {
+  animation: floatY 6s ease-in-out infinite;
+}
+
+.animate-glow {
+  animation: pulseGlow 4s ease-in-out infinite;
+}
+
+/* Hero decorative shapes */
+.hero-shape {
+  @apply absolute rounded-full blur-2xl opacity-40;
+}
+
+/* Animated analyzing loader */
+.analyze-box {
+  background: linear-gradient(180deg, rgba(2,6,23,.8), rgba(2,6,23,.6));
+  border: 1px solid rgba(100, 116, 139, .4);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,.35);
+}
+
+@keyframes spin360 {
+  to { transform: rotate(360deg); }
+}
+
+.loader-ring {
+  width: 64px;
+  height: 64px;
+  border-radius: 9999px;
+  border: 5px solid rgba(148, 163, 184, .25);
+  border-top-color: #22d3ee; /* cyan-400 */
+  border-right-color: #38bdf8; /* sky-400 */
+  animation: spin360 1s linear infinite;
+}
+
+@keyframes shimmerX {
+  0% { background-position: 0% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.scan-bar {
+  height: 6px;
+  width: 100%;
+  border-radius: .5rem;
+  background-image: linear-gradient(90deg, rgba(34,211,238,.2), rgba(34,211,238,.7), rgba(34,211,238,.2));
+  background-size: 200% 100%;
+  animation: shimmerX 1.4s linear infinite;
+}
+
+@keyframes bounceY {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.dots span {
+  display: inline-block;
+  animation: bounceY 1.2s ease-in-out infinite;
+}
+.dots span:nth-child(2) { animation-delay: .2s; }
+.dots span:nth-child(3) { animation-delay: .4s; }
+
+/* Optional: fallback spinner class if referenced */
+.loading-spinner {
+  width: 22px;
+  height: 22px;
+  border-radius: 9999px;
+  border: 3px solid rgba(148, 163, 184, .25);
+  border-top-color: #22d3ee;
+  animation: spin360 .9s linear infinite;
+  margin: 0 auto;
+}
