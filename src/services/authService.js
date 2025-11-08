@@ -96,37 +96,21 @@ export const saveRepoToHistory = async (repoData) => {
     } catch (e) {
       // No history found, using empty array
     }
-    // Merge with existing entry (avoid duplicates by URL)
-    const nowIso = new Date().toISOString();
-    const idx = history.findIndex((h) => h.url === repoData.url);
-    const basePinned = idx >= 0 ? !!history[idx].pinned : false;
+    
+    // Add new repo with timestamp
     const newEntry = {
-      // minimal required fields
-      name: repoData.name,
-      owner: repoData.owner,
-      url: repoData.url,
-      stars: repoData.stars || 0,
-      // richer metadata if provided
-      forks: repoData.forks || 0,
-      language: repoData.language || null,
-      summary: repoData.summary || null,
-      pinned: basePinned,
-      timestamp: nowIso
+      ...repoData,
+      timestamp: new Date().toISOString()
     };
-
-    if (idx >= 0) {
-      // Update existing entry and move to top
-      history.splice(idx, 1);
-    }
+    
+    // Add to beginning of array (most recent first)
     history.unshift(newEntry);
-
-    // Retention policy: keep up to 100, never drop pinned entries
-    const LIMIT = 100;
-    const pinned = history.filter((h) => h.pinned);
-    const nonPinned = history.filter((h) => !h.pinned);
-    const keepNonPinned = nonPinned.slice(0, Math.max(LIMIT - pinned.length, 0));
-    history = [...pinned, ...keepNonPinned];
-
+    
+    // Keep only the last 10 entries
+    if (history.length > 10) {
+      history = history.slice(0, 10);
+    }
+    
     // Save updated history
     await puter.kv.set('repo_history', JSON.stringify(history));
     return true;
@@ -145,44 +129,11 @@ export const getRepoHistory = async () => {
   try {
     const historyData = await puter.kv.get('repo_history');
     if (historyData) {
-      const arr = JSON.parse(historyData) || [];
-      // Sort: pinned first, then by timestamp desc
-      return arr.sort((a, b) => {
-        if (!!a.pinned !== !!b.pinned) return a.pinned ? -1 : 1;
-        return new Date(b.timestamp) - new Date(a.timestamp);
-      });
+      return JSON.parse(historyData);
     }
     return [];
   } catch (error) {
     console.error('Error getting repo history:', error);
     return [];
-  }
-};
-
-// Toggle pin state for a repo by URL
-export const togglePinRepoInHistory = async (url) => {
-  if (!isUserSignedIn() || typeof puter === 'undefined') {
-    return false;
-  }
-  try {
-    const historyData = await puter.kv.get('repo_history');
-    let history = [];
-    if (historyData) history = JSON.parse(historyData) || [];
-    const idx = history.findIndex((h) => h.url === url);
-    if (idx === -1) return false;
-    history[idx].pinned = !history[idx].pinned;
-
-    // Apply retention again: pinned entries should never be dropped
-    const LIMIT = 100;
-    const pinned = history.filter((h) => h.pinned);
-    const nonPinned = history.filter((h) => !h.pinned);
-    const keepNonPinned = nonPinned.slice(0, Math.max(LIMIT - pinned.length, 0));
-    const newHistory = [...pinned, ...keepNonPinned];
-
-    await puter.kv.set('repo_history', JSON.stringify(newHistory));
-    return true;
-  } catch (error) {
-    console.error('Error toggling pin:', error);
-    return false;
   }
 };

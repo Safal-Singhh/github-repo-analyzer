@@ -81,14 +81,9 @@ function App() {
                   />
                   
                   {loading && (
-                    <div className="analyze-box text-center py-10 sm:py-12 mx-auto max-w-xl mt-6 sm:mt-8">
-                      <div className="flex justify-center">
-                        <div className="loader-ring animate-glow"></div>
-                      </div>
-                      <p className="text-white text-xl sm:text-2xl mt-4">
-                        Analyzing repository <span className="dots"><span>.</span><span>.</span><span>.</span></span>
-                      </p>
-                      <div className="scan-bar mt-6"></div>
+                    <div className="text-center py-12">
+                      <div className="loading-spinner"></div>
+                      <p className="text-white text-xl">Analyzing repository...</p>
                     </div>
                   )}
                   

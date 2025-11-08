@@ -67,7 +67,7 @@ export const fetchRepoData = async (repoUrl) => {
         releases: 0, // Would require additional API calls
         lastRelease: 'N/A' // Would require additional API calls
       },
-      analysis: await generateAIAnalysis(repoData, languagesResponse.data, commitsResponse.data, contributorsResponse.data)
+      analysis: generateAIAnalysis(repoData, languagesResponse.data, commitsResponse.data, contributorsResponse.data)
     };
     
     return processedData;
@@ -253,83 +253,8 @@ const getBusFactorStats = (commits) => {
   return { busFactor: bus || 1, topContributorSharePct: topShare, dominanceRisk };
 };
 
-// Utility: safely parse JSON from a model response
-const parseJSONLoose = (text) => {
-  if (!text || typeof text !== 'string') return null;
-  const start = text.indexOf('{');
-  const end = text.lastIndexOf('}');
-  if (start === -1 || end === -1 || end <= start) return null;
-  const slice = text.slice(start, end + 1);
-  try {
-    return JSON.parse(slice);
-  } catch (_) {
-    return null;
-  }
-};
-
-// Try to use Puter AI if available, otherwise return null
-const tryPuterAIAnalysis = async (context) => {
-  try {
-    if (typeof puter === 'undefined' || !puter.ai) return null;
-
-    const system = 'You are a senior OSS advisor. Respond ONLY with compact JSON matching the requested schema.';
-    const user = `Analyze the following GitHub repository signals and produce deep, actionable insights aimed at helping developers contribute.
-Schema:
-{
-  "summary": string,
-  "strengths": string[],
-  "improvements": string[],
-  "technologies": string[],
-  "contributionIdeas": Array<{title:string, description:string, difficulty:"low"|"medium"|"high", impact:"low"|"medium"|"high"}>,
-  "onboardingTips": string[],
-  "risks": string[]
-}
-Constraints:
-- Be specific and data-grounded.
-- Use concise sentences; avoid fluff.
-- Focus on how a developer can contribute effectively.
-
-Context:
-${JSON.stringify(context)}\n`;
-
-    let raw = null;
-
-    // Try common Puter AI interfaces defensively
-    if (typeof puter.ai.chat === 'function') {
-      const res = await puter.ai.chat([
-        { role: 'system', content: system },
-        { role: 'user', content: user }
-      ]);
-      raw = res?.message?.content || res?.content || res?.text || null;
-    } else if (typeof puter.ai.generate === 'function') {
-      const res = await puter.ai.generate({ prompt: `${system}\n\n${user}` });
-      raw = res?.text || res?.content || (typeof res === 'string' ? res : null);
-    } else if (typeof puter.ai.complete === 'function') {
-      const res = await puter.ai.complete(`${system}\n\n${user}`);
-      raw = res?.text || (typeof res === 'string' ? res : null);
-    }
-
-    const json = parseJSONLoose(raw);
-    if (!json) return null;
-    // Ensure minimal required fields for current UI
-    return {
-      summary: json.summary || '',
-      strengths: Array.isArray(json.strengths) ? json.strengths : [],
-      improvements: Array.isArray(json.improvements) ? json.improvements : [],
-      technologies: Array.isArray(json.technologies) ? json.technologies : [],
-      // Preserve extra fields for future UI upgrades
-      contributionIdeas: Array.isArray(json.contributionIdeas) ? json.contributionIdeas : [],
-      onboardingTips: Array.isArray(json.onboardingTips) ? json.onboardingTips : [],
-      risks: Array.isArray(json.risks) ? json.risks : []
-    };
-  } catch (err) {
-    console.error('Puter AI analysis failed:', err);
-    return null;
-  }
-};
-
 // Generate AI analysis based on repository data
-const generateAIAnalysis = async (repoData, languages, commits, contributors) => {
+const generateAIAnalysis = (repoData, languages, commits, contributors) => {
   const languageList = Object.keys(languages || {});
   const primaryLanguage = repoData.language || getTopLanguage(languages) || 'Unknown';
   const dist = getLanguageDistribution(languages);
@@ -378,39 +303,5 @@ const generateAIAnalysis = async (repoData, languages, commits, contributors) =>
     'Git'
   ];
 
-  // Attempt Puter AI deep analysis
-  const context = {
-    name: repoData.full_name,
-    description: repoData.description,
-    stars,
-    forks,
-    watchers: repoData.subscribers_count || 0,
-    issuesOpen,
-    createdAt: repoData.created_at,
-    updatedAt: repoData.updated_at,
-    primaryLanguage,
-    languageDistribution: dist,
-    commitsLast12WeeksAvgPerWeek: cadence.avg,
-    trend: cadence.trend,
-    lastCommitDaysAgo: lastCommitDays,
-    contributorsCount: contributors?.length || 0,
-    busFactor: busStats.busFactor,
-    topContributorSharePct: busStats.topContributorSharePct,
-    dominanceRisk: busStats.dominanceRisk,
-    documentationScore: calculateDocumentationScore(repoData)
-  };
-
-  const llm = await tryPuterAIAnalysis(context);
-  if (llm) {
-    // Merge technologies from our computation if model omitted
-    llm.technologies = Array.isArray(llm.technologies) && llm.technologies.length > 0 ? llm.technologies : technologies;
-    // Ensure strengths/improvements exist; otherwise use heuristics
-    llm.strengths = Array.isArray(llm.strengths) && llm.strengths.length > 0 ? llm.strengths : strengths;
-    llm.improvements = Array.isArray(llm.improvements) && llm.improvements.length > 0 ? llm.improvements : improvements;
-    llm.summary = llm.summary || summary;
-    return llm;
-  }
-
-  // Fallback heuristics
   return { summary, strengths, improvements, technologies };
 };

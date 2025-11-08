@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FaStar as FaStarIcon, FaThumbtack } from 'react-icons/fa';
-import { getCurrentUser, isUserSignedIn, getRepoHistory, togglePinRepoInHistory } from '../services/authService';
+import { getCurrentUser, isUserSignedIn, getRepoHistory } from '../services/authService';
 
 const UserProfile = () => {
   const [user, setUser] = useState(null);
@@ -66,44 +65,16 @@ const UserProfile = () => {
         {repoHistory.length > 0 ? (
           <div className="space-y-4">
             {repoHistory.map((repo, index) => (
-              <div key={index} className="bg-gray-700 rounded-lg p-4 hover:bg-gray-600 transition-colors">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <Link to={`/?repo=${encodeURIComponent(repo.url)}`} className="block">
-                      <h4 className="text-lg font-medium text-white flex items-center gap-2">
-                        {repo.name}
-                        {repo.pinned && (
-                          <span className="text-yellow-400 text-xs border border-yellow-500/50 px-2 py-0.5 rounded">Pinned</span>
-                        )}
-                      </h4>
-                      <p className="text-gray-300 text-sm">{repo.owner}</p>
-                    </Link>
-                    {repo.summary && (
-                      <p className="text-slate-300 text-sm mt-2">{repo.summary}</p>
-                    )}
-                    <div className="flex justify-between mt-2">
-                      <span className="text-gray-400 text-xs">{new Date(repo.timestamp).toLocaleString()}</span>
-                      <span className="text-blue-400 text-xs flex items-center gap-1"><FaStarIcon /> {repo.stars} stars</span>
-                    </div>
+              <Link key={index} to={`/?repo=${encodeURIComponent(repo.url)}`} className="block">
+                <div className="bg-gray-700 rounded-lg p-4 hover:bg-gray-600 transition-colors">
+                  <h4 className="text-lg font-medium text-white">{repo.name}</h4>
+                  <p className="text-gray-300 text-sm">{repo.owner}</p>
+                  <div className="flex justify-between mt-2">
+                    <span className="text-gray-400 text-xs">{new Date(repo.timestamp).toLocaleString()}</span>
+                    <span className="text-blue-400 text-xs">{repo.stars} stars</span>
                   </div>
-                  <button
-                    className="ml-4 text-slate-200 hover:text-white"
-                    title={repo.pinned ? 'Unpin' : 'Pin'}
-                    onClick={async (e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      const ok = await togglePinRepoInHistory(repo.url);
-                      if (ok) {
-                        // Refresh list
-                        const updated = await getRepoHistory();
-                        setRepoHistory(updated);
-                      }
-                    }}
-                  >
-                    <FaThumbtack className={repo.pinned ? 'text-yellow-400' : 'text-slate-400'} />
-                  </button>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         ) : (
